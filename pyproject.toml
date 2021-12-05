@@ -1,0 +1,45 @@
+[tool.poetry]
+name = "grz-service-oex"
+version = "0.1.0"
+description = "GRZ Service - One Exhibition"
+authors = ["Eric Lee <ericstone.dev@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+Django = "^3.1.6"
+requests = "^2.25.1"
+fastapi = "^0.63.0"
+uvicorn = {extras = ["standard"], version = "^0.13.3"}
+django-environ = "^0.4.5"
+django-model-utils = "^4.1.1"
+redis = "^3.5.3"
+django-redis = "^4.12.1"
+django-cors-headers = "^3.7.0"
+argon2-cffi = "^20.1.0"
+django-storages = "^1.11.1"
+boto3 = "^1.17.10"
+psycopg2-binary = "^2.9.1"
+whitenoise = "^5.2.0"
+shortuuid = "^1.0.1"
+Pillow = "^8.2.0"
+python-slugify = "^4.0.1"
+django-filter = "^2.4.0"
+djangorestframework = "^3.12.4"
+pandas = "^1.2.4"
+xlrd = "^2.0.1"
+openpyxl = "^3.0.7"
+python-multipart = "^0.0.5"
+celery = "^5.1.2"
+django-celery-beat = "^2.2.1"
+django-celery-results = "^2.2.0"
+httpx = "^0.21.0"
+
+[tool.poetry.dev-dependencies]
+django-debug-toolbar = "^3.2"
+django-extensions = "^3.1.1"
+factory-boy = "^3.2.0"
+jupyterlab = "^3.0.16"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
