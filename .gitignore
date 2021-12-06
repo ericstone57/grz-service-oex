@@ -3,3 +3,4 @@ __pycache__
 /.envs/
 /.venv/
 /**/*/.ipynb_checkpoints/
+/debug.log

@@ -6,14 +6,14 @@ authors = ["Eric Lee <ericstone.dev@gmail.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.9"
-Django = "^3.1.6"
-requests = "^2.25.1"
-fastapi = "^0.63.0"
-uvicorn = {extras = ["standard"], version = "^0.13.3"}
-django-environ = "^0.4.5"
-django-model-utils = "^4.1.1"
+Django = "^3.2.9"
+requests = "^2.26.0"
+fastapi = "^0.70.0"
+uvicorn = {extras = ["standard"], version = "^0.15.0"}
+django-environ = "^0.8"
+django-model-utils = "^4.2"
 redis = "^3.5.3"
-django-redis = "^4.12.1"
+django-redis = "^5.1.0"
 django-cors-headers = "^3.7.0"
 argon2-cffi = "^20.1.0"
 django-storages = "^1.11.1"
@@ -33,6 +33,7 @@ celery = "^5.1.2"
 django-celery-beat = "^2.2.1"
 django-celery-results = "^2.2.0"
 httpx = "^0.21.0"
+ks-shared = {git = "https://github.com/ericstone57/ks_shared.git", rev = "main"}
 
 [tool.poetry.dev-dependencies]
 django-debug-toolbar = "^3.2"
