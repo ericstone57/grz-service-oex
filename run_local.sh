@@ -6,7 +6,7 @@ export DATABASE_URL="postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES
 
 if [[ "$1" == 'api' ]]; then
   export $(grep -v '^#' .envs/.local/.fastapi | xargs -0)
-  uvicorn config.asgi:fastapp --port 8052 --reload
+  uvicorn config.asgi:fastapp --port 8052 --host 0.0.0.0 --reload
 elif [[ "$1" == 'worker' ]]; then
   celery -A config.celery_app worker -l INFO
 elif [[ "$1" == 'beat' ]]; then

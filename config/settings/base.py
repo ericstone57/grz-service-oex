@@ -51,10 +51,12 @@ THIRD_PARTY_APPS = [
     "storages",
     "rest_framework",
     "django_filters",
+    "taggit",
 ]
 
 LOCAL_APPS = [
     "grz_service_oex.user.apps.UserConfig",
+    "grz_service_oex.oex.apps.OexConfig",
 ]
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
