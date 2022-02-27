@@ -8,7 +8,7 @@ from model_utils.fields import StatusField
 class User(AbstractWXMPUser):
     ROLE_CHOICES = Choices(
         ('user', 'User'),
-        ('storekeeper', 'storekeeper'),
+        ('storekeeper', 'Storekeeper'),
     )
     role = StatusField(choices_name='ROLE_CHOICES', default=ROLE_CHOICES.user)
 

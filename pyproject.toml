@@ -35,6 +35,7 @@ django-celery-beat = "^2.2.1"
 django-celery-results = "^2.2.0"
 httpx = "^0.21.0"
 ks-shared = {git = "https://github.com/ericstone57/ks_shared.git", rev = "main"}
+djantic = "^0.4.1"
 
 [tool.poetry.dev-dependencies]
 django-debug-toolbar = "^3.2"
