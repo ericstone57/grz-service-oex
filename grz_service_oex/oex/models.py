@@ -11,6 +11,8 @@ from model_utils.fields import MonitorField, StatusField
 from taggit.managers import TaggableManager
 from taggit.models import TagBase, CommonGenericTaggedItemBase, GenericTaggedItemBase, TaggedItemBase, Tag
 
+from grz_service_oex.user.models import User
+
 
 class LinkType(BaseModel):
     name = models.CharField(max_length=100)
@@ -43,17 +45,22 @@ class Banner(BaseModel):
     STATUS = Choices('draft', 'published')
     status = StatusField(choices_name='STATUS', default=STATUS.draft)
     published_at = MonitorField(monitor='status', when=['published'], blank=True, null=True, default=None)
+    BELONG_TO_STATUS = Choices('user', 'storekeeper')
+    belong_to = StatusField(choices_name='BELONG_TO_STATUS', default=BELONG_TO_STATUS.user)
 
     def __str__(self):
         return self.name
 
-    @classmethod
-    def retrieve_all(cls):
-        return cls.objects.filter(status=cls.STATUS.published).order_by('display_order', '-modified')
-
     @property
     def pic_link(self):
         return self.pic.url if self.pic else ''
+
+    @classmethod
+    def retrieve_all(cls, belong_to: str = 'user'):
+        return cls.objects.filter(
+            status=cls.STATUS.published,
+            belong_to=belong_to
+        ).order_by('display_order', '-modified')
 
 
 class TaggedThrough(GenericTaggedItemBase):
@@ -70,14 +77,21 @@ class Space(BaseModel):
     cover = models.ImageField(upload_to=upload_to, blank=True, null=True, default=None)
     # 190 x 190, in list
     cover_s = models.ImageField(upload_to=upload_to, blank=True, null=True, default=None)
+
     address = models.CharField(max_length=512, blank=True, default='')
     province = models.CharField(max_length=100, blank=True, default='')
     city = models.CharField(max_length=100, blank=True, default='')
+    district = models.CharField(max_length=100, blank=True, default='')
     longitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True, default=None)
     latitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True, default=None)
+
+    space_area = models.IntegerField(blank=True, default=0)
+    contact_cellphone = models.CharField(max_length=20, blank=True, default='')
+
     intro = models.CharField(max_length=2000, blank=True, default='')
     opentime_from = models.TimeField(blank=True, null=True, default=None)
     opentime_to = models.TimeField(blank=True, null=True, default=None)
+
     tags = TaggableManager(through=TaggedThrough, blank=True)
     favorite_count = models.IntegerField(default=0)
 
@@ -85,6 +99,14 @@ class Space(BaseModel):
     STATUS = Choices('draft', 'published')
     status = StatusField(choices_name='STATUS', default=STATUS.draft)
     published_at = MonitorField(monitor='status', when=['published'], blank=True, null=True, default=None)
+
+    storekeeper = models.ForeignKey(User, blank=True, null=True, default=None, on_delete=models.SET_NULL,
+                                    related_name='storekeeper', related_query_name='storekeeper')
+    VERIFY_STATUS = Choices('apply', 'rejected', 'accepted')
+    verify_status = StatusField(choices_name='VERIFY_STATUS', default=VERIFY_STATUS.apply)
+    accepted_at = models.DateTimeField(blank=True, null=True, default=None)
+    accepted_by = models.ForeignKey(User, blank=True, null=True, default=None, on_delete=models.SET_NULL,
+                                    related_name='accepted_by', related_query_name='accepted_by')
 
     def __str__(self):
         return self.title
@@ -129,6 +151,22 @@ class Space(BaseModel):
     @classmethod
     def retrieve_all(cls):
         return cls.objects.filter(status=cls.STATUS.published).order_by('display_order', '-modified')
+
+    @classmethod
+    def retrieve_storekeeper_status(cls, user_id):
+        q = cls.objects.filter(storekeeper_id=user_id)
+        if q.filter(verify_status=cls.VERIFY_STATUS.accepted).count():
+            return 'normal'
+        if q.count():
+            return 'applied'
+        return 'not yet'
+
+
+class SpacePicture(BaseModel):
+    CATEGORY_STATUS = Choices('outside', 'inside', 'other')
+    category = StatusField(choices_name='CATEGORY_STATUS', default=CATEGORY_STATUS.outside)
+    file = models.FileField(upload_to=upload_to)
+    space = models.ForeignKey(Space, on_delete=models.CASCADE)
 
 
 class WorkSpace(BaseModel):

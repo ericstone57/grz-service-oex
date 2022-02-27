@@ -38,3 +38,13 @@ class UserMode(BaseModel):
     class Config:
         orm_mode = True
 
+
+class StorekeeperMode(BaseModel):
+    storekeeper_status: str
+
+    class Config:
+        orm_mode = True
+
+
+class StorekeeperStatus(BaseModel):
+    storekeeper_status: str

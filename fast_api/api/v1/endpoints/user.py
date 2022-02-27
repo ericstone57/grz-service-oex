@@ -3,7 +3,7 @@ import logging
 import httpx
 from fastapi import APIRouter, HTTPException
 
-from fast_api.adapters.user import save_login, save_info, fetch_one
+from fast_api.adapters.user import save_login, save_info, fetch_one, fetch_storekeeper_status
 from fast_api.schemas.user import UserLoginIn, UserOut, UserInfoIn
 
 logger = logging.getLogger(__name__)
@@ -39,5 +39,13 @@ async def user(uid: str):
     try:
         user = await fetch_one(uid)
         return user.dict()
+    except Exception:
+        raise HTTPException(status_code=404, detail='user not exist')
+
+
+@router.get('/{uid}/storekeeper_status/')
+async def user(uid: str) -> str:
+    try:
+        return await fetch_storekeeper_status(uid)
     except Exception:
         raise HTTPException(status_code=404, detail='user not exist')

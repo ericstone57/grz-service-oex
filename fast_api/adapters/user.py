@@ -1,6 +1,7 @@
 from asgiref.sync import sync_to_async
 
-from fast_api.schemas.user import UserMode
+from fast_api.schemas.user import UserMode, StorekeeperMode
+from grz_service_oex.oex.models import Space
 from grz_service_oex.user.models import User
 
 
@@ -26,3 +27,11 @@ def _fetch_one(uid: str):
 
 async def fetch_one(uid: str):
     return await sync_to_async(_fetch_one, thread_sensitive=True)(uid)
+
+
+def _fetch_storekeeper_status(uid: str):
+    return Space.retrieve_storekeeper_status(user_id=uid)
+
+
+async def fetch_storekeeper_status(uid: str):
+    return await sync_to_async(_fetch_storekeeper_status, thread_sensitive=True)(uid)
