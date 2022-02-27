@@ -13,8 +13,7 @@ router = APIRouter()
 
 @router.post('/login/', response_model=UserOut)
 async def login(post: UserLoginIn):
-    # resp = httpx.post("https://s.e0x233.com/api/v1/social/wxmp/W5hJJ3dheck9/login/", json=post.dict())
-    resp = httpx.post("http://127.0.0.1:8012/api/v1/social/wxmp/W5hJJ3dheck9/login/", json=post.dict())
+    resp = httpx.post("https://s.e0x233.com/api/v1/social/wxmp/W5hJJ3dheck9/login/", json=post.dict())
     if resp.status_code == 200:
         user = await save_login(resp.json())
         return user.dict()
@@ -25,7 +24,7 @@ async def login(post: UserLoginIn):
 
 @router.post('/info/', response_model=UserOut)
 async def update_info(post: UserInfoIn):
-    resp = httpx.post("http://127.0.0.1:8012/api/v1/social/wxmp/W5hJJ3dheck9/decode/user/", json=post.dict())
+    resp = httpx.post("https://s.e0x233.com/api/v1/social/wxmp/W5hJJ3dheck9/decode/user/", json=post.dict())
     if resp.status_code == 200:
         user = await save_info({'uid': post.uid, **resp.json()})
         return user.dict()
