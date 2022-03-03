@@ -894,7 +894,7 @@ zookeeper = ["kazoo (>=1.3.1)"]
 
 [[package]]
 name = "ks-shared"
-version = "0.0.7"
+version = "0.0.8"
 description = "shared toolkit package for KURI Service"
 category = "main"
 optional = false
@@ -905,7 +905,7 @@ develop = false
 type = "git"
 url = "https://github.com/ericstone57/ks_shared.git"
 reference = "main"
-resolved_reference = "ab0f4950510f9e55394278069c49be79c6c645e2"
+resolved_reference = "ff55ffebafff56676fa725ef24c55e9dd8ce70ef"
 
 [[package]]
 name = "markupsafe"
