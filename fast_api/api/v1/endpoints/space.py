@@ -1,23 +1,30 @@
 import logging
-from enum import Enum
 from typing import List
 
 import environ
+from enum import Enum
 from fastapi import APIRouter, Depends, File, UploadFile
 from starlette.responses import Response
 from starlette.status import HTTP_200_OK
 
-from fast_api.adapters.space import retrieve_all, retrieve_one, create, save_pic
-from fast_api.schemas.space import SpaceSimpleORM, SpacesOut, SpaceOut, SpaceORM, SpaceCreateIn
+from fast_api.adapters.space import retrieve_all, retrieve_one, create, save_pic, retrieve_by_user
+from fast_api.schemas.space import SpaceSimpleORM, SpaceOut, SpaceORM, SpaceCreateIn, SpaceSimpleOut
 
 env = environ.Env()
 router = APIRouter()
 logger = logging.getLogger(__name__)
 
 
-@router.get('/', response_model=SpacesOut)
+@router.get('/', response_model=List[SpaceSimpleOut],
+            description="""
+**st_geo**, search through geolocation
+
+**user_geo**, user geolocation, used to calculate distance to destination
+
+use 116.481028,39.989643 format as parameter for geolocation
+            """)
 def get_all(spaces: List[SpaceSimpleORM] = Depends(retrieve_all)):
-    return SpacesOut.fill(data=spaces)
+    return [SpaceSimpleOut(**o.dict()) for o in spaces]
 
 
 @router.get('/{space_id}/', response_model=SpaceOut)
@@ -44,3 +51,8 @@ async def upload_pic(
 ):
     await save_pic(space_id, category, file)
     return Response(status_code=HTTP_200_OK)
+
+
+@router.get('/by_user/{user_id}/')
+def get_by_user(user_id: str):
+    return [SpaceSimpleOut(**o.dict()) for o in retrieve_by_user(user_id)]

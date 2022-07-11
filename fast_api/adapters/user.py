@@ -1,6 +1,6 @@
 from asgiref.sync import sync_to_async
 
-from fast_api.schemas.user import UserMode, StorekeeperMode
+from fast_api.schemas.user import UserMode
 from grz_service_oex.oex.models import Space
 from grz_service_oex.user.models import User
 
@@ -19,6 +19,14 @@ def _save_info(data: dict):
 
 async def save_info(data: dict):
     return await sync_to_async(_save_info, thread_sensitive=True)(data)
+
+
+def _update_phone(data: dict):
+    User.update_phone_v2(data)
+
+
+async def update_phone(data: dict):
+    return await sync_to_async(_update_phone, thread_sensitive=True)(data)
 
 
 def _fetch_one(uid: str):

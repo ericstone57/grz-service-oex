@@ -1,9 +1,15 @@
 import os
 
+import environ
 from celery import Celery
 
+env = environ.Env()
+
 # set the default Django settings module for the 'celery' program.
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings.local")
+if env('APP_ENV', default='local') == 'production':
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings.production')
+else:
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings.local')
 
 app = Celery("grz_service_oex")
 

@@ -33,7 +33,7 @@ psycopg2-binary = "^2.9.3"
 python = "^3.9"
 python-jose = { version = "^3.3.0", extras = ["cryptography"] }
 python-multipart = "^0.0.5"
-python-slugify = "^6.1.1"
+python-slugify = "^6.1.2"
 redis = "^4.2.1"
 requests = "^2.27.1"
 shortuuid = "^1.0.8"

@@ -7,7 +7,8 @@ from fastapi import APIRouter, Depends
 from fast_api.adapters.exhibition import retrieve_all, retrieve_by_space, retrieve_ended_by_space, retrieve_one, \
     retrieve_work
 from fast_api.schemas.exhibition import ExhibitionSimpleORM, ExhibitionsOut, ExhibitionOut, ExhibitionORM, WorkORM, \
-    WorkOut
+    WorkOut, ExhibitionForStorekeeperSimpleOut
+from grz_service_oex.oex.models import Exhibition
 
 env = environ.Env()
 router = APIRouter()
@@ -37,3 +38,8 @@ def get_by_space(exhibitions: List[ExhibitionSimpleORM] = Depends(retrieve_ended
 @router.get('/work/{id}/', response_model=WorkOut)
 def get_one(work: WorkORM = Depends(retrieve_work)):
     return WorkOut(**work.dict())
+
+
+@router.get('/storekeeper/by_space/{space_id}/')
+def get_by_space_as_storekeeper(space_id: str):
+    return [ExhibitionForStorekeeperSimpleOut(**ExhibitionSimpleORM.from_orm(o).dict()) for o in Exhibition.retrieve_by_space_as_storekeeper(space_id=space_id)]

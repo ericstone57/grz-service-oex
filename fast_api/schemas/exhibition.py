@@ -26,6 +26,16 @@ class ExhibitionSimpleORM(BaseModel):
     end_at: datetime = Field(alias='end_at_local', default='')
     fav_cnt: int = Field(alias='favorite_count', default='')
     days_left: int = 0
+    verify_status: str
+
+    class Config:
+        orm_mode = True
+
+
+class ExhibitionSimplestORM(BaseModel):
+    id: str
+    title: str
+    cover_s: str = Field(alias='cover_s_link', default='')
 
     class Config:
         orm_mode = True
@@ -100,6 +110,18 @@ class ExhibitionSimpleOut(BaseModel):
     fav_cnt: int = 0
     days_left: int = 0
     days_left_text_format: str = '离结束还有：{}天'
+
+
+class ExhibitionForStorekeeperSimpleOut(BaseModel):
+    id: str
+    title: str = ''
+    cover_s: str = ''
+    start_at: datetime = ''
+    end_at: datetime = ''
+    fav_cnt: int = 0
+    days_left: int = 0
+    days_left_text_format: str = '离结束还有：{}天'
+    verify_status: str
 
 
 class WorkOut(BaseModel):

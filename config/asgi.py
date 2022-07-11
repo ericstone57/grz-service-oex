@@ -1,58 +1,48 @@
-"""
-ASGI config for asics_wxa project.
-
-It exposes the ASGI callable as a module-level variable named ``application``.
-
-For more information on this file, see
-https://docs.djangoproject.com/en/3.1/howto/deployment/asgi/
-"""
-
 import os
 import sys
 from pathlib import Path
-import environ
 
-from django.core.asgi import get_asgi_application
-from django.core.exceptions import ImproperlyConfigured
+import aioredis
+import environ
+from django.core.wsgi import get_wsgi_application
+from fastapi import FastAPI
+from fastapi.middleware.wsgi import WSGIMiddleware
+from fastapi_cache import FastAPICache
+from fastapi_cache.backends.redis import RedisBackend
 from starlette.middleware.cors import CORSMiddleware
 
 env = environ.Env()
-
 ROOT_DIR = Path(__file__).resolve(strict=True).parent.parent
 sys.path.append(str(ROOT_DIR / "grz_service_oex"))
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings.local')
+if env('APP_ENV', default='local') == 'production':
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings.production')
+else:
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings.local')
 
-django_application = get_asgi_application()
+API_PREFIX = f'/api/{env("API_VERSION")}/{env("API_PREFIX")}'
 
-# Import websocket application here, so apps from django_application are loaded first
-from config.websocket import websocket_application  # noqa isort:skip
-
-
-async def application(scope, receive, send):
-    if scope["type"] == "http":
-        await django_application(scope, receive, send)
-    elif scope["type"] == "websocket":
-        await websocket_application(scope, receive, send)
-    else:
-        raise NotImplementedError(f"Unknown scope type {scope['type']}")
-
-
-from fastapi import FastAPI
-from fast_api.api.v1.api import api_router
+django_application = get_wsgi_application()
 
 fastapp = FastAPI(
-    openapi_url='/api/v1/oex/openapi.json',
-    docs_url='/api/v1/oex/docs'
+    openapi_url=f'{API_PREFIX}/openapi.json',
+    docs_url=f'{API_PREFIX}/docs'
 )
-fastapp.include_router(api_router, prefix='/api/v1/oex')
 
-try:
-    fastapp.add_middleware(
-        CORSMiddleware,
-        allow_origins=env.list('BACKEND_CORS_ORIGINS'),
-        allow_credentials=True,
-        allow_methods=["*"],
-        allow_headers=["*"],
-    )
-except ImproperlyConfigured:
-    pass
+from fast_api.api.v1.api import api_router
+
+fastapp.include_router(api_router, prefix=API_PREFIX)
+
+fastapp.mount('/app', WSGIMiddleware(django_application))
+fastapp.add_middleware(
+    CORSMiddleware,
+    allow_origins=env.list('BACKEND_CORS_ORIGINS', default=['']),
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
+@fastapp.on_event("startup")
+async def startup():
+    redis = aioredis.from_url(env('REDIS_URL'), encoding="utf8", decode_responses=True)
+    FastAPICache.init(RedisBackend(redis), prefix="api_cache")
